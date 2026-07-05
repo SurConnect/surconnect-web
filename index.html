@@ -1,19 +1,88 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SurConnect</title>
-
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SurConnect | Music Community</title>
+    <style>
+        body { font-family: sans-serif; background-color: #121212; color: white; padding: 15px; }
+        .container { max-width: 500px; margin: auto; }
+        .card { background: #1e1e1e; padding: 15px; margin: 10px 0; border-radius: 10px; border-left: 5px solid #00e676; }
+        input, textarea, button { width: 100%; margin: 8px 0; padding: 10px; border-radius: 5px; border: none; box-sizing: border-box; }
+        button { background: #00e676; color: black; font-weight: bold; cursor: pointer; }
+        .btn-wa { display: block; background: #25d366; color: white; text-align: center; padding: 10px; text-decoration: none; border-radius: 5px; margin-top: 10px; }
+        h2 { color: #00e676; }
+    </style>
 </head>
 <body>
 
-  <h1>🎵 SurConnect</h1>
-  <p>Welcome to SurConnect</p>
+<div class="container">
+    <h2>SurConnect</h2>
+    
+    <div style="background: #222; padding: 15px; border-radius: 10px;">
+        <h3>Apni Profile Add Karein</h3>
+        <form id="artistForm">
+            <input type="text" id="name" placeholder="Naam" required>
+            <input type="text" id="role" placeholder="Role (e.g., Rapper, Producer)" required>
+            <input type="text" id="city" placeholder="City" required>
+            <textarea id="intro" placeholder="Chhota Intro..."></textarea>
+            <input type="number" id="wa" placeholder="WhatsApp Number (91XXXXXXXXXX)" required>
+            <button type="submit">Publish Profile</button>
+        </form>
+    </div>
 
-  <script type="module" src="firebase.js"></script>
-  <script src="script.js"></script>
+    <hr style="margin: 20px 0;">
+
+    <h2>Artists List</h2>
+    <div id="artistList">Loading profiles...</div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBWvb_FV_-QtKHtPgl6yvkcQaN42_zf8xk",
+        authDomain: "surconnect-438be.firebaseapp.com",
+        projectId: "surconnect-438be",
+        storageBucket: "surconnect-438be.firebasestorage.app",
+        messagingSenderId: "540534889209",
+        appId: "1:540534889209:web:3b21455d15472e7f7fe028"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Data Submit Logic
+    document.getElementById('artistForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await addDoc(collection(db, "artists"), {
+            name: document.getElementById('name').value,
+            role: document.getElementById('role').value,
+            city: document.getElementById('city').value,
+            intro: document.getElementById('intro').value,
+            wa: document.getElementById('wa').value
+        });
+        alert("Profile Published!");
+        location.reload();
+    });
+
+    // Data Display Logic
+    const listDiv = document.getElementById('artistList');
+    const querySnapshot = await getDocs(collection(db, "artists"));
+    listDiv.innerHTML = "";
+    querySnapshot.forEach((doc) => {
+        const d = doc.data();
+        listDiv.innerHTML += `
+            <div class="card">
+                <div style="font-weight:bold; font-size:18px;">${d.name}</div>
+                <div style="color:#00e676;">${d.role} | ${d.city}</div>
+                <p>${d.intro}</p>
+                <a href="https://wa.me/${d.wa}" class="btn-wa">WhatsApp Pe Connect Karein</a>
+            </div>
+        `;
+    });
+</script>
 
 </body>
 </html>
