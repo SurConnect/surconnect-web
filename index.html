@@ -3,30 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SurConnect</title>
+    <title>SurConnect App</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container">
-    <h2>SurConnect</h2>
-    
-    <div class="form-box">
-        <h3>Apni Profile Add Karein</h3>
-        <form id="artistForm">
-            <input type="text" id="name" placeholder="Naam" required>
-            <input type="text" id="role" placeholder="Role (e.g., Rapper)" required>
-            <input type="text" id="city" placeholder="City" required>
-            <textarea id="intro" placeholder="Chhota Intro..."></textarea>
-            <input type="number" id="wa" placeholder="WhatsApp Number" required>
-            <button type="submit">Publish Profile</button>
-        </form>
+    <div class="container">
+        <div id="signup-section">
+            <h2>Sign Up</h2>
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="password" placeholder="Password">
+            <button id="signupBtn">Create Account</button>
+        </div>
+
+        <div id="setup-section" style="display:none;">
+            <h2>Profile Setup</h2>
+            <input type="text" id="name" placeholder="Naam">
+            <input type="text" id="role" placeholder="Role">
+            <input type="number" id="wa" placeholder="WhatsApp Number">
+            <button id="saveProfile">Save Profile</button>
+        </div>
+
+        <div id="dashboard-section" style="display:none;">
+            <h2>Artists List</h2>
+            <div id="artistList"></div>
+        </div>
     </div>
 
-    <h2>Artists List</h2>
-    <div id="artistList">Loading profiles...</div>
-</div>
-
-<script type="module" src="script.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
