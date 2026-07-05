@@ -1,4 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -11,35 +12,48 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Submit logic
-document.getElementById('artistForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
+// Function to switch screens
+function showSection(id) {
+    document.getElementById('signup-section').style.display = 'none';
+    document.getElementById('setup-section').style.display = 'none';
+    document.getElementById('dashboard-section').style.display = 'none';
+    document.getElementById(id).style.display = 'block';
+}
+
+// Signup Logic
+document.getElementById('signupBtn').addEventListener('click', async () => {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    try {
+        await createUserWithEmailAndPassword(auth, email, password);
+        alert("Account Created!");
+        showSection('setup-section');
+    } catch (e) { alert(e.message); }
+});
+
+// Save Profile Logic
+document.getElementById('saveProfile').addEventListener('click', async () => {
     await addDoc(collection(db, "artists"), {
+        userId: auth.currentUser.uid,
         name: document.getElementById('name').value,
         role: document.getElementById('role').value,
-        city: document.getElementById('city').value,
-        intro: document.getElementById('intro').value,
         wa: document.getElementById('wa').value
     });
-    alert("Profile Published!");
-    location.reload();
+    alert("Profile Saved!");
+    loadArtists();
+    showSection('dashboard-section');
 });
 
-// Load logic
-const listDiv = document.getElementById('artistList');
-const querySnapshot = await getDocs(collection(db, "artists"));
-listDiv.innerHTML = "";
-querySnapshot.forEach((doc) => {
-    const d = doc.data();
-    listDiv.innerHTML += `
-        <div class="card">
-            <div style="font-weight:bold; font-size:18px;">${d.name}</div>
-            <div style="color:#00e676;">${d.role} | ${d.city}</div>
-            <p>${d.intro}</p>
-            <a href="https://wa.me/${d.wa}" class="btn-wa">WhatsApp Pe Connect Karein</a>
-        </div>
-    `;
-});
-
+// Load Data
+async function loadArtists() {
+    const snapshot = await getDocs(collection(db, "artists"));
+    const list = document.getElementById('artistList');
+    list.innerHTML = "";
+    snapshot.forEach(doc => {
+        const d = doc.data();
+        list.innerHTML += `<div class="card"><b>${d.name}</b><br>${d.role}</div>`;
+    });
+}
